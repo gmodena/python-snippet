@@ -72,7 +72,17 @@ def word2number(word):
 
 def generate_lookups(number):
     """
-    Generate  lookup entries for a given number 
+    Generate  lookup entries for a given string k
+    as:
+    k, k-1, k-2,...k-i for 0 <= i <= k 
+    
+    >>> for lk in generate_lookups("107835"): print lk
+    107835
+    10783
+    1078
+    107
+    10
+    1
     """
     for i, n in enumerate(number):
         yield number[:len(number)-i]
@@ -85,6 +95,16 @@ def find_encodings(number, words, replaced=False):
     If no number is passed, yield and empty list and terminate computation.
     
     Yield-ing [] is necessary for the recursion step.
+    
+    
+    >>> words = load_words(SAMPLE_DICT)
+    >>> numbers = load_numbers(SAMPLE_INPUT)
+    >>> for e in find_encodings("107835", words, numbers): print e
+    ['neu', 'o"d', '5']
+    ['neu', '8', 'da']
+    ['je', 'bo"s', '5']
+    ['je', 'Bo"', 'da']
+    ['je', '7', 'o"d', '5']
     """
     if not number:
         yield []
@@ -134,6 +154,25 @@ def find_encodings(number, words, replaced=False):
 def phone_numbers(numbers, words):
     """
     Print phone numbers translations
+  
+     >>> words = load_words(SAMPLE_DICT)
+     >>> numbers = load_numbers(SAMPLE_INPUT)
+     >>> phone_numbers(numbers, words)
+     5624-82: mir Tor
+     5624-82: Mix Tor
+     4824: fort
+     4824: Torf
+     4824: Tor 4
+     4824: 4 Ort
+     10/783--5: neu o"d 5
+     10/783--5: neu 8 da
+     10/783--5: je bo"s 5
+     10/783--5: je Bo" da
+     10/783--5: je 7 o"d 5
+     381482: so 1 Tor
+     04824: 0 fort
+     04824: 0 Torf
+     04824: 0 Tor 4
   
     """        
     for number in numbers.split():
