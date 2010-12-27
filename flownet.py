@@ -74,7 +74,7 @@ def generate_lookups(number):
     """
     Generate  lookup entries for a given string k
     as:
-    k, k-1, k-2,...k-i for 0 <= i <= k 
+    k, k-1, k-2,...k-i for 0 <= i <= len(k)
     
     >>> for lk in generate_lookups("107835"): print lk
     107835
