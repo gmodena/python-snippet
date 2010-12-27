@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
-import urllib2
-import re
-import doctest
-
-__author__ = "Gabriele Modena <gm@nowave.it>"
 """
 Map a phone number to the corresponding words from the input dictionary that generate that number.
 
 See http://www.flownet.com/ron/papers/lisp-java/instructions.html for full problem description
 
+$ time python flownet.py
+real	0m5.860s
+user	0m2.275s
+sys	    0m0.095s
 """
+__author__ = "Gabriele Modena <gm@nowave.it>"
+
+import urllib2
+import re
+import doctest
 
 
 CHARACTERS = {'a': 5, 'b': 7, 'c': 6, 'd': 3, 'e': 0, 'f': 4, 'g': 9, 'h': 9, 'i': 6, 'j': 1, 'k': 7, 'l': 8, 
@@ -25,7 +29,21 @@ SAMPLE_OUTPUT = "5624-82: mir Tor\n5624-82: Mix Tor\n4824: Torf\n4824: fort\n482
 
 def load_words(dictionary=None):
     """
-    Load dictionary
+    Load word dictionary.
+    
+    By default tries to retrieve a dictionary from http://www.flownet.com/ron/papers/lisp-java/dictionary.txt.
+    Alternatively a string of newline separated words can be supplied (see SAMPLE_DICT).
+    
+    
+    The whole dictionary is read in memory in an hash table.
+    Keys of the tables are numerical representation of words stored as strings.
+    The value associated to a key is a list of words (strings) that generated it.
+    
+    For example 'fort' and 'Torf' can both be translated to the number 4824 and stored as { '4824': ['fort', 'Torf'] }
+    
+    >>> load_words(SAMPLE_DICT)
+    {'10': ['je'], '105513': ['jemand'], '1550': ['Name'], '482': ['Tor'], '783': ['bo"s'], '4824': ['fort', 'Torf'], '4021': ['fern'], '51': ['an'], '35': ['da'], '107': ['neu'], '4034': ['Fest'], '38': ['so'], '562': ['mir', 'Mix'], '7857': ['blau'], '56202': ['Mixer'], '400': ['Fee'], '824': ['Ort'], '83': ['o"d'], '253302': ['Wasser'], '7884': ['Boot'], '78': ['Bo"']}
+    
     """
     words = {}
     if not dictionary:
@@ -43,7 +61,12 @@ def load_words(dictionary=None):
 
 def load_numbers(input=None):
     """
-    Load a list of phone numbers
+    Load a list of phone numbers.
+    
+    By default tries to retrieve a dictionary from http://www.flownet.com/ron/papers/lisp-java/input.txt.
+    
+    Alternatively a string of newline separated numbers can be supplied (see SAMPLE_INPUT).
+    
     """
     if not input:
         input = urllib2.urlopen('http://www.flownet.com/ron/papers/lisp-java/input.txt').read()
@@ -52,7 +75,7 @@ def load_numbers(input=None):
     
 def word2number(word):
     """
-    Map a word to a number
+    Map a word to its numerical representation according to translations defined by CHARACTERS
     
     >>> word2number("2wusch5")
     '2273695'
@@ -98,8 +121,7 @@ def find_encodings(number, words, replaced=False):
     
     
     >>> words = load_words(SAMPLE_DICT)
-    >>> numbers = load_numbers(SAMPLE_INPUT)
-    >>> for e in find_encodings("107835", words, numbers): print e
+    >>> for e in find_encodings("107835", words, False): print e
     ['neu', 'o"d', '5']
     ['neu', '8', 'da']
     ['je', 'bo"s', '5']
@@ -189,7 +211,7 @@ if __name__ == '__main__':
     Calling load_words and load_numbers without paramaters will use
     the sample number list and dictionary provided by flownet
     """
-    words = load_words(SAMPLE_DICT)
-    numbers = load_numbers(SAMPLE_INPUT)
-    
+    words = load_words()
+    numbers = load_numbers()
+        
     phone_numbers(numbers, words)
